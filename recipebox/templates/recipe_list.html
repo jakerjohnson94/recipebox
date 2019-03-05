@@ -1,15 +1,8 @@
 
-<body> 
 <ul>
 {% for recipe in recipes %}
-
-<li>
-<a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
-</li>
-
+<li><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></li>
 {% endfor %} 
+</ul>
 
 
-
-
-</body>
