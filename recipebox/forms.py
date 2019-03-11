@@ -4,7 +4,15 @@ from recipebox.models import *
 
 
 class AuthorAddForm(forms.Form):
-    user = forms.ModelChoiceField(queryset=User.objects.all())
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
+        super(AuthorAddForm, self).__init__(*args, **kwargs)
+        if user.is_staff:
+            self.fields["user"].queryset = Author.objects.all()
+        else:
+            self.fields["user"].queryset = Author.objects.filter(user=user)
+
+    user = forms.ModelChoiceField(queryset=None)
     bio = forms.CharField(widget=forms.Textarea)
 
 

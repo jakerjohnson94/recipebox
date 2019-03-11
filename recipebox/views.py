@@ -77,13 +77,13 @@ def authoradd(request):
     form = None
 
     if request.method == "POST":
-        form = AuthorAddForm(request.POST)
+        form = AuthorAddForm(request.POST, user=request.user)
         if form.is_valid():
             data = form.cleaned_data
             Author.objects.create(user=data["user"], bio=data["bio"])
             return render(request, "updated.html")
     else:
-        form = AuthorAddForm()
+        form = AuthorAddForm(user=request.user)
 
     return render(request, html, {"form": form})
 
