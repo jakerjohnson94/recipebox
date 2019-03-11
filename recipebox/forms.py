@@ -1,4 +1,5 @@
 from django import forms
+
 from recipebox.models import *
 
 
@@ -10,10 +11,14 @@ class AuthorAddForm(forms.Form):
 class RecipeAddForm(forms.Form):
     title = forms.CharField(max_length=160)
     author = forms.ModelChoiceField(queryset=Author.objects.all())
-    description = forms.CharField(widget=forms.Textarea)
     time_required = forms.IntegerField()
+    description = forms.CharField(widget=forms.Textarea)
     instructions = forms.CharField(widget=forms.Textarea)
 
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=50)
+    password = forms.CharField(widget=forms.PasswordInput())
     # title = models.CharField("Title of recipe", max_length=50)
     # author = models.ForeignKey(Author, on_delete=models.CASCADE)
     # description = models.CharField("Description of the recipe", max_length=50)

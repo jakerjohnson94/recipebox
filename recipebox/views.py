@@ -1,6 +1,11 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
 from .models import Author, Recipe
-from .forms import AuthorAddForm, RecipeAddForm
+from .forms import *
 
 
 def recipe_list(request):
@@ -21,6 +26,52 @@ def author_detail(request, author_id):
     )
 
 
+def logout_action(request):
+    html = "logout.html"
+    logout(request)
+    return redirect(request.GET.get("next", "/"))
+
+
+def login_view(request):
+    html = "login.html"
+    form = None
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            user = authenticate(
+                username=data["username"], password=data["password"]
+            )
+            if user is not None:
+                login(request, user)
+                return redirect(request.GET.get("next", "/"))
+    else:
+        form = LoginForm()
+    return render(request, html, {"form": form})
+
+
+@staff_member_required(login_url="/login/")
+def useradd(request):
+    html = "formadd.html"
+    form = None
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            data = form.cleaned_data
+            username = data["username"]
+            raw_password = data["password1"]
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect(request.GET.get("recipes/"))
+
+    else:
+        form = UserCreationForm()
+    return render(request, "useradd.html", {"form": form})
+
+
+@login_required
 def authoradd(request):
     html = "authoradd.html"
     form = None
@@ -37,6 +88,7 @@ def authoradd(request):
     return render(request, html, {"form": form})
 
 
+@login_required
 def recipeadd(request):
     html = "recipeadd.html"
     form = None
